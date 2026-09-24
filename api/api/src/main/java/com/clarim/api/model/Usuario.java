@@ -119,4 +119,8 @@ public class Usuario {
     public void setCriadoEm(OffsetDateTime criadaEm) {
         this.criadoEm = criadaEm;
     }
+
+    public void setSenhaA() {
+
+    }
 }

@@ -1,9 +1,11 @@
 package com.clarim.api.controller;
 
+import com.clarim.api.dto.GoogleLoginRequest;
 import com.clarim.api.dto.LoginRequest;
 import com.clarim.api.dto.LoginResposta;
 import com.clarim.api.security.JwtService;
 import com.clarim.api.security.UsuarioAutenticado;
+import com.clarim.api.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,10 +21,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, AuthService authService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -43,5 +47,11 @@ public class AuthController {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao autenticar usuário");
         }
+    }
+
+    @PostMapping("/google")
+    public LoginResposta loginGoogle(@RequestBody GoogleLoginRequest googleLoginRequest) {
+        return authService.loginGoogle(googleLoginRequest.credential());
+
     }
 }
