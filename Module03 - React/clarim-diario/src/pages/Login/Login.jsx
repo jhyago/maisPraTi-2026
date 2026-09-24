@@ -20,10 +20,10 @@ function Login() {
     // (sem o usuário clicar num link).
     const navigate = useNavigate()
 
-    function enviar(e) {
+    async function enviar(e) {
         e.preventDefault()   // impede o recarregamento padrão do <form>
         try {
-            login(email, senha)  // pode lançar erro se as credenciais falharem
+            await login(email, senha)  // pode lançar erro se as credenciais falharem
             navigate('/')        // deu certo → volta para a capa
         } catch (erro) {
             setAviso(erro.message)  // exibe a mensagem de erro na tela

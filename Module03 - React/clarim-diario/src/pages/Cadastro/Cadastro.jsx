@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { buscarCep } from '../../services/viacep'
+import { cadastrar } from '../../services/auth'
 
 function Cadastro() {
   // UM estado-objeto para o formulário inteiro (em vez de 7 useState)
@@ -8,6 +10,7 @@ function Cadastro() {
     logradouro: '', numero: '', bairro: '', cidade: '', uf: '',
   })
   const [aviso, setAviso] = useState('')   // mensagens de erro/status
+  const navigate = useNavigate()
 
   // UMA função genérica atualiza QUALQUER campo:
   function atualizarCampo(e) {
@@ -37,9 +40,14 @@ function Cadastro() {
     }
   }
 
-  function enviar(e) {
+  async function enviar(e) {
     e.preventDefault()                       // o velho conhecido!
-    alert(`Assinatura registrada, ${form.nome}! Bem-vindo ao Clarim.`)
+    try {
+      await cadastrar (form.nome, form.email, form.senha)
+      navigate('/login')
+    } catch (erro) {
+      console.log(erro)
+    }
   }
 
   return (
@@ -57,6 +65,9 @@ function Cadastro() {
 
         <label htmlFor="email">E-mail</label>
         <input id="email" type="email" value={form.email} onChange={atualizarCampo} required />
+        
+        <label htmlFor="senha">Senha</label>
+        <input type="password" id='senha' value={form.senha} onChange={atualizarCampo} minLength={8} required />
 
         <label htmlFor="cep">CEP</label>
         {/* onBlur: ao sair do campo, consulta a ViaCEP */}

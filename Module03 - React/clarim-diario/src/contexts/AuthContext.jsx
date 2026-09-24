@@ -7,7 +7,7 @@
 // O Context cria um "canal direto": quem quiser o dado, se inscreve.
 
 import { createContext, useContext, useState } from "react";
-
+import { login as loginNaApi} from '../services/auth'
 // createContext cria o "canal". O valor null é o padrão caso alguém
 // tente ler o contexto sem um Provider por cima (tratamos isso no useAuth).
 const AuthContext = createContext(null);
@@ -24,17 +24,16 @@ export function AuthProvider({ children }) {
 
     // ⚠️ Didático: em produção NUNCA valide senha no front-end assim.
     // A verificação de credenciais deve acontecer no back-end/API.
-    function login(email, senha) {
-        if (email === 'jonah@clarim.com' && senha === 'odeioaranha123') {
-            const dados = { nome: 'J. Jonah Jameson', email }
-            setUsuario(dados)
-            // JSON.stringify: objeto → texto (localStorage só guarda strings)
-            localStorage.setItem('usuario', JSON.stringify(dados))
-            return
-        }
+    async function login(email, senha) {
+        const dados = await loginNaApi(email, senha)
 
-        // Lançar erro deixa a tela de Login decidir COMO exibir a falha.
-        throw new Error('E-mail ou senha incorretos.')
+        localStorage.setItem('token', dados.token)
+        localStorage.setItem('usuario', JSON.stringify({
+            nome: dados.nome,
+            papel: dados.papel
+        }))
+
+        setUsuario({ nome: dados.nome, papel: dados.papel})
     }
 
     function logout() {
