@@ -3,9 +3,12 @@ package com.clarim.api.controller;
 import com.clarim.api.dto.GoogleLoginRequest;
 import com.clarim.api.dto.LoginRequest;
 import com.clarim.api.dto.LoginResposta;
+import com.clarim.api.model.Usuario;
+import com.clarim.api.security.DadosGoogle;
+import com.clarim.api.security.GoogleTokenService;
 import com.clarim.api.security.JwtService;
 import com.clarim.api.security.UsuarioAutenticado;
-import com.clarim.api.service.AuthService;
+import com.clarim.api.service.GoogleAuthService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,12 +24,14 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final AuthService authService;
+    private final GoogleAuthService googleAuthService;
+    private final GoogleTokenService googleTokenService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, AuthService authService) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, GoogleAuthService googleAuthService, GoogleTokenService googleTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.authService = authService;
+        this.googleAuthService = googleAuthService;
+        this.googleTokenService = googleTokenService;
     }
 
     @PostMapping("/login")
@@ -51,7 +56,12 @@ public class AuthController {
 
     @PostMapping("/google")
     public LoginResposta loginGoogle(@RequestBody GoogleLoginRequest googleLoginRequest) {
-        return authService.loginGoogle(googleLoginRequest.credential());
+        DadosGoogle google = googleTokenService.validar(googleLoginRequest.credential());
 
+        Usuario usuario = googleAuthService.entrarOuCadastrar(google);
+
+        String token = jwtService.gerarToken(new UsuarioAutenticado(usuario));
+
+        return new LoginResposta(token, usuario.getNome(), usuario.getPapel().name());
     }
 }

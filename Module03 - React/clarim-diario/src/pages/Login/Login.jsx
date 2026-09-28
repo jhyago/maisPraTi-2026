@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { GoogleLogin } from '@react-oauth/google'
 
 function Login() {
     // Aqui usamos UM useState por campo (compare com o Cadastro.jsx, que
@@ -14,7 +15,7 @@ function Login() {
     const [aviso, setAviso] = useState('')
 
     // Pegamos a função `login` do contexto de autenticação.
-    const { login } = useAuth()
+    const { login, loginComGoogle } = useAuth()
 
     // useNavigate devolve uma função para mudar de página VIA CÓDIGO
     // (sem o usuário clicar num link).
@@ -27,6 +28,15 @@ function Login() {
             navigate('/')        // deu certo → volta para a capa
         } catch (erro) {
             setAviso(erro.message)  // exibe a mensagem de erro na tela
+        }
+    }
+
+    async function aoEntrarComGoogle(resposta) {
+        try {
+            await loginComGoogle(resposta.credential)
+            navigate('/')
+        } catch (erro) {
+            setAviso(erro.response?.data?.mensagem ?? "Não foi possível entrar com o Google")
         }
     }
 
@@ -50,6 +60,7 @@ function Login() {
                 <p className='rodape-form'>
                     Ainda não é assinante? <Link to='/cadastro'>Assine o Clarim</Link>
                 </p>
+                <GoogleLogin onSuccess={aoEntrarComGoogle} onError={() => setAviso('O login com o Google foi interrompido.')} />
             </form>
         </main>
     )

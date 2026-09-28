@@ -7,7 +7,7 @@
 // O Context cria um "canal direto": quem quiser o dado, se inscreve.
 
 import { createContext, useContext, useState } from "react";
-import { login as loginNaApi} from '../services/auth'
+import { login as loginNaApi, loginComGoogle as loginGoogle} from '../services/auth'
 // createContext cria o "canal". O valor null é o padrão caso alguém
 // tente ler o contexto sem um Provider por cima (tratamos isso no useAuth).
 const AuthContext = createContext(null);
@@ -36,6 +36,17 @@ export function AuthProvider({ children }) {
         setUsuario({ nome: dados.nome, papel: dados.papel})
     }
 
+    function iniciarSessao(dados) {
+        localStorage.setItem('token', dados.token)
+        const resumo = { nome: dados.nome, papel: dados.papel }
+        localStorage.setItem('usuario', JSON.stringify(resumo))
+        setUsuario(resumo)
+    }
+
+    async function loginComGoogle(credential) {
+        iniciarSessao(await loginGoogle(credential))
+    }
+
     function logout() {
         setUsuario(null)
         localStorage.removeItem('usuario')
@@ -43,7 +54,7 @@ export function AuthProvider({ children }) {
 
     // value = o "pacote" que fica disponível para quem consumir o contexto.
     return (
-        <AuthContext.Provider value={{ usuario, login, logout }}>
+        <AuthContext.Provider value={{ usuario, login, logout, loginComGoogle }}>
             {children}
         </AuthContext.Provider>
     )

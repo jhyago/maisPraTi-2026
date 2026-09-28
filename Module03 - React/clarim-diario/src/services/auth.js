@@ -5,10 +5,15 @@ export async function login (email, senha) {
     return data
 }
 
-function logout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuario')
-    setUsuario(null)
+// function logout() {
+//     localStorage.removeItem('token')
+//     localStorage.removeItem('usuario')
+//     setUsuario(null)
+// }
+
+export async function loginComGoogle(credential) {
+    const { data } = await api.post('/api/auth/google', { credential })
+    return data
 }
 
 export async function cadastrar(nome, email, senha) {

@@ -22,13 +22,22 @@ public class GoogleTokenService {
                 .build();
     }
 
-    public GoogleIdToken.Payload validar(String idToken) {
+    public DadosGoogle validar(String idToken) {
         try {
             GoogleIdToken token = verificador.verify(idToken);
             if(token == null) {
                 throw new IllegalArgumentException("Token inválido");
             }
-            return token.getPayload();
+
+            GoogleIdToken.Payload claims = token.getPayload();
+
+            return new DadosGoogle(
+                    claims.getSubject(),
+                    claims.getEmail(),
+                    Boolean.TRUE.equals(claims.getEmailVerified()),
+                    (String) claims.get("name"),
+                    (String) claims.get("picture")
+            );
         } catch (Exception e) {
             throw new IllegalArgumentException("Token inválido");
         }
