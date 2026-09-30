@@ -41,6 +41,8 @@ public class ConfiguracaoSeguranca {
                 .authorizeHttpRequests(regras -> regras
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/usuarios").permitAll()
+                        .requestMatchers("/api/webhook/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/planos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/noticias/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/noticias").hasAnyRole("EDITOR", "ADMIN")
                         .anyRequest().authenticated()

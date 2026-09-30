@@ -1,6 +1,5 @@
 package com.clarim.api.repository;
 
-import com.clarim.api.model.Provider;
 import com.clarim.api.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +11,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByEmail(String email);
 
     Optional<Usuario> findByProviderId(String providerId);
+
+    Optional<Usuario> findByStripeCustomerId(String stripeCustomerId);
 }
