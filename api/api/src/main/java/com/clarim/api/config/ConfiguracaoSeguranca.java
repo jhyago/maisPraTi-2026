@@ -41,8 +41,20 @@ public class ConfiguracaoSeguranca {
                 .authorizeHttpRequests(regras -> regras
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/usuarios").permitAll()
+                        // O ENDPOINT DO WEBHOOK TEM QUE SER PÚBLICO: quem chama
+                        // é o servidor do Stripe, que não tem (e não deveria
+                        // ter) um JWT nosso. A segurança aqui não vem do
+                        // Spring Security — vem da verificação de assinatura
+                        // HMAC dentro do WebhookController (Webhook.constructEvent).
                         .requestMatchers("/api/webhook/**").permitAll()
+                        // Ver planos (preço, nome) não exige login — só
+                        // CRIAR a sessão de checkout (POST /api/assinaturas/checkout,
+                        // que NÃO está nesta lista, logo cai em anyRequest().authenticated()).
                         .requestMatchers(HttpMethod.GET, "/api/planos").permitAll()
+                        // Ler uma notícia é público mesmo quando ela é premium —
+                        // é o NoticiaService quem decide, nota a nota, se o
+                        // campo `texto` vem preenchido ou null. Por isso aqui
+                        // não tem como (e não deveria) bloquear a rota inteira.
                         .requestMatchers(HttpMethod.GET, "/api/noticias/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/noticias").hasAnyRole("EDITOR", "ADMIN")
                         .anyRequest().authenticated()

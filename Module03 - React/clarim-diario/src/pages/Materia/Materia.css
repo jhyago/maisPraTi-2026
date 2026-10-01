@@ -51,3 +51,29 @@
 .materia__texto p {
     margin-bottom: 20px;
 }
+
+/* Paywall: aparece no lugar do texto quando a notícia vem bloqueada
+   (noticia.bloqueada === true) — ver Materia.jsx. */
+.materia__paywall {
+    max-width: 65ch;
+    text-align: center;
+    padding: 32px 20px;
+    border: 1px dashed var(--urgente);
+}
+
+.materia__paywall p {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.materia__assinar-cta {
+    display: inline-block;
+    font-family: var(--fonte-ui);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    background: var(--urgente);
+    padding: 10px 24px;
+    text-decoration: none;
+}

@@ -13,5 +13,5 @@ public interface AssinaturaRepository extends JpaRepository<Assinatura, Long> {
     Optional<Assinatura> findByStripeSubscriptionId(String stripeSubscriptionId);
     List<Assinatura> findByUsuarioIdOrderByCriadoEmDesc(Long usuarioId);
 
-    boolean existsByUsuarioIdAndPlanoAtivoTrue(Long usuarioId, Collection<StatusAssinatura> status, OffsetDateTime agora);
+    boolean existsByUsuarioIdAndStatusInAndPeriodoFimAfter(Long usuarioId, Collection<StatusAssinatura> status, OffsetDateTime agora);
 }

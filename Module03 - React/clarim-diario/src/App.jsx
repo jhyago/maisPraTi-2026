@@ -11,7 +11,10 @@ import Login from './pages/Login/Login'
 import RotaProtegida from './components/RotaProtegida'
 import Footer from './components/Footer/Footer'
 import Painel from './pages/Painel/Painel'
+import Assinar from './pages/Assinar/Assinar'
+import AssinaturaCancelada from './pages/Assinar/AssinaturaCancelada'
 import './App.css'
+import AssinaturaSucesso from './pages/Assinar/AssinaturaSucesso'
 
 function App() {
   // useState com FUNÇÃO inicial (lazy init): esse código só roda UMA vez,
@@ -65,6 +68,16 @@ function App() {
             <Painel />
           </RotaProtegida>
         } />
+        {/* As 3 rotas do fluxo de pagamento. /assinar exige login (RotaProtegida)
+            porque é de lá que se DISPARA a compra. Já /assinatura/sucesso e
+            /assinatura/cancelada são públicas de propósito: quem navega até
+            elas é o PRÓPRIO STRIPE redirecionando o navegador (ver
+            CheckoutService.criarSessao, setSuccessUrl/setCancelUrl no backend),
+            e isso acontece ANTES de sabermos se o usuário ainda está "logado"
+            no sentido do React — a página só precisa exibir uma mensagem. */}
+        <Route path="/assinar" element={<RotaProtegida><Assinar /></RotaProtegida>} />
+        <Route path="/assinatura/sucesso" element={<AssinaturaSucesso />} />
+        <Route path="/assinatura/cancelada" element={<AssinaturaCancelada />} />
       </Routes>
 
       <Footer />

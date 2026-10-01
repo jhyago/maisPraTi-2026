@@ -24,6 +24,12 @@ export function AuthProvider({ children }) {
 
     // ⚠️ Didático: em produção NUNCA valide senha no front-end assim.
     // A verificação de credenciais deve acontecer no back-end/API.
+    //
+    // RELEVANTE PARA O CHECKOUT: é o `dados.token` salvo aqui que o
+    // interceptor de services/api.js vai anexar em TODA chamada futura —
+    // inclusive POST /api/assinaturas/checkout. Sem ter passado por aqui
+    // (ou por iniciarSessao, no caso do login via Google) antes, o botão
+    // "Assinar" chamaria a API sem token e receberia 401/403.
     async function login(email, senha) {
         const dados = await loginNaApi(email, senha)
 
@@ -36,6 +42,9 @@ export function AuthProvider({ children }) {
         setUsuario({ nome: dados.nome, papel: dados.papel})
     }
 
+    // Mesma ideia do login() de senha, só que reaproveitada pelo fluxo do
+    // Google (loginComGoogle abaixo) — por isso foi extraída: os dois
+    // caminhos terminam gravando o MESMO par token/usuario no localStorage.
     function iniciarSessao(dados) {
         localStorage.setItem('token', dados.token)
         const resumo = { nome: dados.nome, papel: dados.papel }
@@ -50,6 +59,14 @@ export function AuthProvider({ children }) {
     function logout() {
         setUsuario(null)
         localStorage.removeItem('usuario')
+        // CORRIGIDO: faltava remover o 'token'. Sem esta linha, o JWT antigo
+        // continuava salvo no localStorage, e o interceptor do services/api.js
+        // (que lê exatamente a chave 'token') seguia anexando
+        // `Authorization: Bearer <token antigo>` em TODA requisição seguinte —
+        // inclusive um checkout — mesmo com a tela mostrando "deslogado".
+        // Numa máquina compartilhada, a pessoa seguinte a usar o site podia
+        // acabar autenticada como quem saiu, até o token expirar (60 min).
+        localStorage.removeItem('token')
     }
 
     // value = o "pacote" que fica disponível para quem consumir o contexto.

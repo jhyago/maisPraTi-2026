@@ -49,6 +49,16 @@ function Materia() {
     )
   }
 
+  // PASSO 5 do fluxo de pagamento, do lado de quem lê: o backend já fez
+  // a conta toda (NoticiaService.buscarPorId) e resumiu o resultado em
+  // dois campos — é só isso que precisamos olhar aqui, nunca recalcular
+  // a regra de acesso no front (o front não é confiável para isso; é só
+  // vitrine).
+  //   - noticia.bloqueada === true  → backend mandou texto: null de propósito
+  //   - noticia.premium  === true   → é uma matéria paga (mesmo quando
+  //                                    bloqueada é false, por já se ter acesso)
+  const bloqueada = noticia.bloqueada
+
   return (
     <main className="container materia">
       <Link to="/" className="materia__voltar">← Voltar à capa</Link>
@@ -57,9 +67,25 @@ function Materia() {
       <h1>{noticia.titulo}</h1>
       <p className="materia__resumo">{noticia.resumo}</p>
 
-      <div className="materia__texto">
-        <p>{noticia.texto}</p>
-      </div>
+      {bloqueada ? (
+        // CONVITE PARA ASSINAR: isto é o paywall. Antes desta correção,
+        // uma matéria bloqueada simplesmente renderizava `noticia.texto`
+        // (que chega null do backend) dentro do <p> abaixo — ou seja,
+        // nem visitante nem assinante viam qualquer chamada para ação,
+        // só um espaço vazio. O comentário no DTO do Java
+        // (NoticiaResposta.bloqueada, "avisa o React para mostrar o
+        // convite") já previa este bloco; só faltava escrevê-lo.
+        <div className="materia__paywall">
+          <p>Esta matéria é exclusiva para assinantes do Clarim.</p>
+          <Link to="/assinar" className="materia__assinar-cta">
+            Assine para continuar lendo
+          </Link>
+        </div>
+      ) : (
+        <div className="materia__texto">
+          <p>{noticia.texto}</p>
+        </div>
+      )}
     </main>
   )
 }

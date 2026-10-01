@@ -54,7 +54,11 @@ function Header({ tema, aoAlternarTema }) {
         <a href="#">Cidade</a>
         <a href="#">Ameaças Urbanas</a>
         <a href="#">Opinião do Editor</a>
-        <Link to="/cadastro">Assine</Link>
+        {/* CORRIGIDO: apontava para /cadastro (criar CONTA grátis) — a
+            página de planos/pagamento é /assinar (ver App.jsx). Com o link
+            errado, não existia NENHUM caminho de navegação até o checkout;
+            era preciso digitar a URL manualmente. */}
+        <Link to="/assinar">Assine</Link>
       </nav>
     </header>
   )
